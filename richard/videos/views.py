@@ -23,11 +23,12 @@ from django.contrib.sites.models import Site
 from django.core.paginator import EmptyPage, Paginator
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.template import RequestContext
 from haystack.query import SearchQuerySet
 
 
 from richard.videos import models
-
+from richard.videos import forms
 
 def split_year(title):
     """Returns (title base, year)
@@ -128,7 +129,6 @@ def speaker(request, speaker_id, slug=None):
          'videos': videos})
     return ret
 
-
 def video(request, video_id, slug):
     obj = get_object_or_404(models.Video, pk=video_id)
 
@@ -159,13 +159,33 @@ def video(request, video_id, slug):
             af for af in available_formats
             if af['mime_type'].endswith(('ogg', 'ogv', 'webm'))]
 
+    # crazy unauthorized edit
+    if "editkey" in request.GET:
+        edit_key = request.GET['editkey']
+        template='videos/video_edit.html'
+        if request.method == 'POST':
+            video_form = forms.Video_Form(request.POST, instance=obj)
+            if video_form.is_valid():
+                video_form.save()
+            else:
+                print video_form.errors
+        else:
+            video_form = forms.Video_Form(instance=obj)
+    else:
+        template='videos/video.html'
+        video_form = None
+
     ret = render(
-        request, 'videos/video.html',
+        request,
+        template,
         {'meta': meta,
          'v': obj,
+         'v_form':video_form,
          'embed': embed,
          'embed_type': embed_type,
-         'available_formats': available_formats})
+         'available_formats': available_formats},
+        context_instance=RequestContext(request))
+
     return ret
 
 
