@@ -163,7 +163,8 @@ def video(request, video_id, slug):
 
     # crazy unauthorized edit
     if "editkey" in request.GET:
-        edit_key = request.GET['editkey']
+      edit_key = request.GET['editkey']
+      if edit_key=='1':
         template='videos/video_edit.html'
 
         Speaker_FormSet = modelformset_factory(
