@@ -22,7 +22,9 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.paginator import EmptyPage, Paginator
 from django.http import Http404, HttpResponse
+from django.forms.models import modelform_factory,modelformset_factory
 from django.shortcuts import get_object_or_404, render
+from django.template import RequestContext
 
 from haystack.query import SearchQuerySet
 from rest_framework import generics
@@ -174,15 +176,54 @@ def video(request, video_id, slug):
 
     use_amara = settings.AMARA_SUPPORT
 
-    ret = render(request, 'videos/video.html', {
+    # crazy edit
+    if "editkey" in request.GET:
+      edit_key = request.GET['editkey']
+      if edit_key=='1':
+        template='videos/video_edit.html'
+
+        Video_Form = modelform_factory(
+                models.Video, fields=("title","summary"))
+
+        Speaker_FormSet = modelformset_factory(
+                models.Speaker,
+                extra=0,
+                fields=('name',) )
+
+        if request.method == 'POST':
+
+            video_form = Video_Form(request.POST, instance=obj)
+            speaker_formset = Speaker_FormSet(
+                    request.POST, queryset=obj.speakers.all())
+
+            if video_form.is_valid():
+              if speaker_formset.is_valid():
+                video_form.save()
+                speaker_formset.save()
+
+        else:
+            video_form = Video_Form(instance=obj)
+            speaker_formset = Speaker_FormSet(queryset=obj.speakers.all())
+    else:
+        template='videos/video.html'
+        video_form = None
+        speaker_formset = None
+
+
+    ret = render(request, template, {
         'meta': meta,
         'v': obj,
+        'v_form': video_form,
+        's_formset': speaker_formset,
         'use_amara': use_amara,
         'video_url': video_url,
         'embed': embed,
         'embed_type': embed_type,
-        'html5_formats': html5_formats
-    })
+        'html5_formats': html5_formats,
+            },
+        context_instance=RequestContext(request)
+        )
+
     return ret
 
 
