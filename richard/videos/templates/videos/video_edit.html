@@ -28,6 +28,8 @@
 <form method="POST">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     {{v_form.errors|safe}}
+    {{s_formset.errors|safe}}
+    {{u_formset.errors|safe}}
 
 {% if not v.is_live %}
 <div class="alert alert-danger">
@@ -104,6 +106,13 @@
         </ul>
       </div>
     {% endif %}
+
+        <ul>
+        {{ u_formset.management_form }}
+        {% for f in u_formset %}
+            <li>{{ f|safe }}</li>
+        {% endfor %}
+        </ul>
 
     {% if v.description %}
       <div class="section">
