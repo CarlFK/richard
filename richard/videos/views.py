@@ -180,7 +180,6 @@ def video(request, video_id, slug):
     if "editkey" in request.GET:
       edit_key = request.GET['editkey']
       if edit_key=='1':
-        template='videos/video_edit.html'
 
         Video_Form = modelform_factory(
                 models.Video, fields=("title","summary"))
@@ -218,13 +217,12 @@ def video(request, video_id, slug):
                     instance=obj,
                     queryset=obj.related_urls.all())
     else:
-        template='videos/video.html'
         video_form = None
         speaker_formset = None
         url_formset = None
 
 
-    ret = render(request, template, {
+    ret = render(request, 'videos/video.html', {
         'meta': meta,
         'v': obj,
         'v_form': video_form,

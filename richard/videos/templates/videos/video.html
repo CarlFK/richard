@@ -24,6 +24,13 @@
 {% block title %}{% page_title v.title %}{% endblock %}
 
 {% block content %}
+
+{% if v_form %}
+<form method="POST">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    {{v_form.errors|safe}}
+{% endif %}
+
 {% if not v.is_live %}
 <div class="alert alert-danger">
   <i class="glyphicon glyphicon-warning-sign"></i> <strong>Note:</strong>
@@ -35,6 +42,11 @@
   <div id="videobox" class="col-md-12">
     <div class="section">
       <h3 class="centered">{{ v.title }}</h3>
+
+        {% if v_form %}
+           {{ v_form.title|safe }}
+           <input type="submit" value="Save">
+        {% endif %}
     </div>
 
     {# Fix floats in unisubs widget that are not cleared #}
@@ -62,6 +74,11 @@
             <p>No video to show.</p>
           {% endif %}
         {% endif %}
+          {% comment %}
+          {# carl's hacky veyepar title preview #}
+  <img src="{{ v.thumbnail_url }}" width=600 ><br/>
+  (note: ths image will not automatically update, carl has to bump it.)
+          {% endcomment %}
       </div>
     </div>
   </div>
@@ -79,6 +96,7 @@
       <div class="section">
         <h4>Summary</h4>
         {{ v.summary|md|safe }}
+        {{ v_form.summary|safe }}
       </div>
     {% endif %}
 
@@ -92,6 +110,13 @@
         </ul>
       </div>
     {% endif %}
+
+        <ul>
+        {{ u_formset.management_form }}
+        {% for f in u_formset %}
+            <li>{{ f|safe }}</li>
+        {% endfor %}
+        </ul>
 
     {% if v.description %}
       <div class="section">
@@ -120,6 +145,7 @@
           {% empty %}
             Unknown
           {% endfor %}
+          {{ s_formset|safe }}
         </dd>
 
         {% if v.language %}
@@ -193,6 +219,10 @@
     </div>
   </div>
 </div>
+{% if v_form %}
+    <input type="submit" value="Save">
+    </form>
+{% endif %}
 {% endblock %}
 
 {% block site_js %}
