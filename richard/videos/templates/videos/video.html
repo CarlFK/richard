@@ -76,8 +76,11 @@
         {% endif %}
           {% comment %}
           {# carl's hacky veyepar title preview #}
-  <img src="{{ v.thumbnail_url }}" width=600 ><br/>
-  (note: ths image will not automatically update, carl has to bump it.)
+          {% if not v.is_live %}
+            <img src="{{ v.thumbnail_url }}" width=600 ><br/>
+            (note: ths image will not automatically update, carl has to bump it.)
+          {% endif %}
+         
           {% endcomment %}
       </div>
     </div>
