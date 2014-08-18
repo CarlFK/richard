@@ -148,7 +148,9 @@
           {% empty %}
             Unknown
           {% endfor %}
-          {{ s_formset|safe }}
+          {% if s_formset %}
+            {{ s_formset|safe }}
+          {% endif %}
         </dd>
 
         {% if v.language %}
