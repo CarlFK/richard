@@ -74,14 +74,12 @@
             <p>No video to show.</p>
           {% endif %}
         {% endif %}
-          {% comment %}
           {# carl's hacky veyepar title preview #}
           {% if not v.is_live %}
             <img src="{{ v.thumbnail_url }}" width=600 ><br/>
-            (note: ths image will not automatically update, carl has to bump it.)
+            (note: ths image will not automatically update, video producer has to bump it.)
           {% endif %}
          
-          {% endcomment %}
       </div>
     </div>
   </div>
